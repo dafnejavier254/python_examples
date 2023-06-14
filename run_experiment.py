@@ -7,6 +7,8 @@ from sklearn.svm import SVR
 from sklearn.feature_extraction import DictVectorizer
 from feature_extractor import extract_features
 
+from feature_extractor import extract_features
+
 
 def main():
 
@@ -22,8 +24,25 @@ def main():
    # Extract features
    X_train = df_train["text"].apply(extract_features).values
    X_train = vec.fit_transform(X_train)
-   X_test = df_test["text"].apply(extract_features.values
+   y_train = df_train["score"].values
+   X_test = df_test["text"].apply(extract_features).values
    X_test = vec.transform(X_test)
+   y_test = df_test["score"].values
+   X_test = vec.transform(X_test)
+   
+   # Train model
+    model = SVR(gamma="scale", C=0.01, kernel="linear")
+    model.fit(X_train, y_train)
+
+   # Evaluate model on test set
+    print("Pearson's r: " + str(pearsonr(model.predict(X_test), y_test)))
+    print(
+        "Quadratic weighted kappa: " +
+        str(cohen_kappa_score(np.rint(model.predict(X_test)), y_test, weights="quadratic"))
+    )
+
+
+if __name__ == "__main__":
+    main()
  
- features = [extract_features(text) for text in df["text"]]
 
